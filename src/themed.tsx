@@ -1,8 +1,9 @@
-import { getVariable, useTheme } from '@tamagui/core'
+import { getVariable, useTheme, getTokens, getVariableValue, useMediaPropsActive } from '@tamagui/core'
 import React from 'react'
 
 export function themed<A extends React.FC>(Component: A) {
-  const wrapped = (props: any) => {
+  const wrapped = (propsIn: any) => {
+    const props = useMediaPropsActive(propsIn)
     const theme = useTheme()
 
     // Pulled from core and appears to be a bug
@@ -13,6 +14,10 @@ export function themed<A extends React.FC>(Component: A) {
         (!props.disableTheme ? theme.color : null) ||
         '#000',
     )
+    const size =
+      typeof props.size === 'string'
+        ? getVariableValue(getTokens().size[props.size] || props.size)
+        : props.size
     return (
       <Component
         {...props}
